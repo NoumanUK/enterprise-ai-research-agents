@@ -1,21 +1,30 @@
 from typing import TypedDict, List, Dict, Any, Optional
 
 
-class ResearchState(TypedDict):
-    # User input
+class ResearchState(TypedDict, total=False):
+    # ── Input ──────────────────────────────────────────────
     query: str
 
-    # Step 1 output (planner)
-    tasks: List[str]
+    # ── planner_node ───────────────────────────────────────
+    tasks: List[Dict[str, Any]]       # list of TaskDicts (task, intent, query, priority)
+    research_plan: str                # human-readable plan summary
 
-    # Step 2 output (researcher)
-    findings: List[Dict[str, Any]]
+    # ── researcher_node ────────────────────────────────────
+    findings: List[Dict[str, Any]]    # per-task synthesis + evidence + sources
 
-    # Step 3 output (fact checker)
-    verified_findings: List[Dict[str, Any]]
+    # ── evidence_ranker_node ───────────────────────────────
+    ranked_evidence: List[Dict[str, Any]]   # scored, filtered evidence chunks
 
-    # Step 4 output (reporter)
+    # ── claim_extractor_node ───────────────────────────────
+    claims: List[Dict[str, Any]]      # atomic verifiable claims per task
+
+    # ── fact_checker_node ──────────────────────────────────
+    verified_claims: List[Dict[str, Any]]   # verified claims with status/confidence
+
+    # ── reporter_node ──────────────────────────────────────
     report: str
+    report_metadata: Dict[str, Any]
 
-    # Optional metadata (important for MCP later)
+    # ── legacy / optional ──────────────────────────────────
+    verified_findings: List[Dict[str, Any]]  # kept for backward compat
     metadata: Optional[Dict[str, Any]]
