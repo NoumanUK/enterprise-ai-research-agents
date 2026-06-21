@@ -4,9 +4,8 @@ llm = LLMService()
 
 
 def resolve_intent(task: str) -> str:
-    """
-    Forces MCP to be interpreted correctly before search.
-    """
+    if "mcp" not in task.lower():
+        return task
 
     prompt = f"""
 You are a query disambiguation system.
@@ -14,15 +13,19 @@ You are a query disambiguation system.
 Task:
 {task}
 
-IMPORTANT:
-"MCP" most likely refers to "Model Context Protocol (Anthropic)" in AI context.
+The acronym "MCP" is ambiguous.
 
-Rewrite the task so that search engines will return ONLY AI/LLM-related results.
+Possible meanings include:
+- Model Context Protocol in AI/LLM systems
+- Multi-cloud platform
+- Microsoft Configuration Manager
+- Other domain-specific meanings
 
-Rules:
-- If MCP appears, expand it to Model Context Protocol
-- Avoid Microsoft Cloud Platform unless explicitly requested
-- Keep meaning focused on AI systems and enterprise AI
+Use the task context to resolve the meaning.
+If the task is about AI, LLMs, agents, Claude, Anthropic, tools, or integrations,
+rewrite MCP as "Model Context Protocol".
+If the context clearly indicates another meaning, use that meaning.
+If unclear, preserve the ambiguity and rewrite the query to search for clarification.
 
 Return ONLY the rewritten task.
 """
